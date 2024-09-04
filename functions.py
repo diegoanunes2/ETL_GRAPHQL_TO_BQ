@@ -37,8 +37,12 @@ def ler_configuracoes(arquivo_config):
             'config_api', 'url_api')
         configuracoes['token_api'] = config.get(
             'config_api', 'token_api')
+        configuracoes['token_bq'] = config.get(
+            'config_api', 'token_bq')
+        configuracoes['caminho_bq'] = config.get(
+            'config_api', 'caminho_bq')
 
-    except (configparser.NoSectionError, configparser.NoOptionError) as e:
+    except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) as e:
         print(f"(!) Erro ao ler o arquivo de configuração: {e}")
         return None
 
