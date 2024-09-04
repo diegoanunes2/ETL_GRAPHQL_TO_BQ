@@ -119,7 +119,6 @@ def executar_com_repeticao(token, url, query, endpoint_name, max_tentativas, int
         print(f"Tentativa {tentativa}...")
         resultado = chamar_api(
             token, url, query, endpoint_name, start_date, end_date)
-        print(resultado)
         if resultado is not None:
             print("API chamada com sucesso.")
             return resultado
