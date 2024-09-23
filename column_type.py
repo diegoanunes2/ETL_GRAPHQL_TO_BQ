@@ -1,17 +1,13 @@
 # =====================================================#
 # ===== Lista de colunas para ajuse por Dataframe =====#
 # =====================================================#
-# Passar valores das colunas já tratadas no formato
-# ['coluna1','coluna2'...]
+# Passar valores das colunas com nomes já tratados no formato
+# Json { 'chave': 'valor'}
 
-# ========= Processos =========#
-
-exemplo_bool = []
-
-exemplo_int = []
-
-exemplo_date = []
-
-exemplo_float = []
-
-exemplo_string = []
+tipos_de_dados_embalagens = {
+    'campo_1': 'int',
+    'campo_2': 'bool',
+    'campo_3': 'str',
+    'campo_4': 'float',
+    'campo_5': 'datetime'
+}
