@@ -72,12 +72,12 @@ df = pd.json_normalize(Json_string_exemplo,sep='_')
 #========= Remove caracteres das colunas  ======#
 fn.remove_char_columns(df)
 
-#=====================(Integer)====================
-for coluna in ct.exemplo_int:
- fn.adjust_type_integer(column=coluna, df=df)
+#============= Ajusta tipos de dados ============#
+df_ajustado = fn.ajustar_tipos(df=df, tipo_colunas=ct.tipos_de_dados_exemplo)
 
 # ======= Envia os Dataframes Ajustados para o Bigquery =======#
-fn.send_to_bigquery(table=caminho_bq, dados=df, cert=token_bq)
+fn.send_to_bigquery(table=caminho_bq, dados=df_ajustado, cert=token_bq)
+
 # ======= Roda Consulta incremental (caso exista)
 consulta_incremental_documentos = pd.read_gbq(
     credentials=credentials, query=query.query_remocao)
