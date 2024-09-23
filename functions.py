@@ -158,121 +158,50 @@ def send_to_bigquery(table, dados, cert):
         print(f"Dataframe {table} vazio, não será enviado ao BigQuery")
 
 
-# =============================================================#
-# ===== Função para ajuste dos tipos de dados das colunas =====#
-# ======================== (String) ===========================#
-# =============================================================#
+# ==========================================#
+# = Função para Ajustar os tipos de dados  =#
+# ==========================================#
 
-def adjust_type_string(column, df):
-    if not df.empty:
-        if column in df.columns:
-            df[column] = df[column].astype("str", errors='ignore')
+def ajustar_tipos(df, tipo_colunas):
+    """
+    Ajusta os tipos de colunas de um DataFrame de acordo com um dicionário de tipos.
+
+    Parâmetros:
+    df (pd.DataFrame): O DataFrame a ser ajustado.
+    tipo_colunas (dict): Dicionário onde as chaves são os nomes das colunas e os valores são os tipos desejados.
+                         Exemplo: {'coluna1': 'str', 'coluna2': 'float', 'coluna3': 'datetime'}
+
+    Retorna:
+    pd.DataFrame: O DataFrame com os tipos de dados ajustados.
+    """
+    for coluna, tipo in tipo_colunas.items():
+        if coluna in df.columns:
+            if tipo == 'str':
+                df[coluna] = df[coluna].astype(str, errors='ignore')
+            elif tipo == 'float':
+                df[coluna] = pd.to_numeric(
+                    df[coluna], errors='coerce').fillna(0.0)
+            elif tipo == 'int':
+                df[coluna] = pd.to_numeric(
+                    df[coluna], errors='coerce').fillna(0).astype(int)
+            elif tipo == 'datetime':
+                df[coluna] = pd.to_datetime(
+                    df[coluna], errors='coerce', dayfirst=True)
+            elif tipo == 'bool':
+                # Converte para booleano, tratando valores válidos e inválidos
+                df[coluna] = df[coluna].astype(str).str.lower().replace(
+                    {'true': True, 'false': False,
+                        '1': True, '0': False, 'none': None}
+                )
+                df[coluna] = df[coluna].astype(bool, errors='ignore')
+            else:
+                print(
+                    f"Tipo '{tipo}' para a coluna '{coluna}' não é suportado.")
         else:
-            df[column] = ''
-            df[column] = df[column].astype("str", errors='ignore')
-    else:
-        print(f"Dataframe {df} Vazio, não será ajustado")
+            print(f"Coluna '{coluna}' não encontrada no DataFrame.")
 
-# =============================================================#
-# ===== Função para ajuste dos tipos de dados das colunas =====#
-# ======================== (Integer) ==========================#
-# =============================================================#
-
-
-def adjust_type_integer(column, df):
-    if not df.empty:
-        if column in df.columns:
-            # Substituir valores em branco por zero
-            df[column].fillna(0, inplace=True)
-            df[column] = df[column].astype("int64", errors='ignore')
-        else:
-            df[column] = np.nan
-            df[column] = df[column].astype("int64", errors='ignore')
-    else:
-        print(f"Dataframe {df} Vazio, não será ajustado")
-
-# =============================================================#
-# ===== Função para ajuste dos tipos de dados das colunas =====#
-# ====================== (Timestamp) ==========================#
-# =============================================================#
-
-
-def adjust_type_timestamp(column, df):
-    if not df.empty:
-        if column in df.columns:
-            df[column] = pd.to_datetime(
-                df[column], yearfirst=True, errors='coerce')
-        else:
-            df[column] = pd.NaT
-            df[column] = pd.to_datetime(
-                df[column], yearfirst=True, errors='coerce')
-    else:
-        print(f"Dataframe {df} Vazio, não será ajustado")
-
-# =============================================================#
-# ===== Função para ajuste dos tipos de dados das colunas =====#
-# ====================== (Timestamp Day First) ==========================#
-# =============================================================#
-
-
-def adjust_type_timestamp_df(column, df):
-    if not df.empty:
-        if column in df.columns:
-            df[column] = pd.to_datetime(
-                df[column], dayfirst=True, errors='coerce')
-        else:
-            df[column] = pd.NaT
-            df[column] = pd.to_datetime(
-                df[column], dayfirst=True, errors='coerce')
-    else:
-        print(f"Dataframe {df} Vazio, não será ajustado")
-
-# =============================================================#
-# ===== Função para ajuste dos tipos de dados das colunas =====#
-# ======================== (Float) ============================#
-# =============================================================#
-
-
-def adjust_type_float(column, df):
-    if not df.empty:
-        if column in df.columns:
-            # Substituir valores em branco por zero
-            df[column].fillna(0.0, inplace=True)
-
-            # Converter a coluna para tipo numérico
-            df[column] = pd.to_numeric(df[column], errors='coerce')
-        else:
-            print(f"Coluna {column} não encontrada no dataframe.")
-    else:
-        print(f"Dataframe {df} vazio, não será ajustado.")
-
-
-def adjust_type_float(column, df):
-    if not df.empty:
-        if column in df.columns:
-            df[column] = pd.to_numeric(df[column], errors='ignore')
-        else:
-            df[column] = NaN
-            df[column] = pd.to_numeric(df[column], errors='ignore')
-    else:
-        print(f"Dataframe {df} Vazio, não será ajustado")
-
-# =============================================================#
-# ===== Função para ajuste dos tipos de dados das colunas =====#
-# ======================= (Boolean) ===========================#
-# =============================================================#
-
-
-def adjust_type_boolean(column, df):
-    if not df.empty:
-        if column in df.columns:
-            df[column] = df[column].astype("bool", errors='raise')
-        else:
-            df[column] = NaN
-            df[column] = df[column].astype("bool", errors='raise')
-    else:
-        print(f"Dataframe {df} Vazio, não será ajustado")
-
+    return df
+    
 # =============================================================#
 # ========   Função para remover colunas duplicadas   =========#
 # =============================================================#
