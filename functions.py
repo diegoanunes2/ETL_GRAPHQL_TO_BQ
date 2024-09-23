@@ -3,6 +3,7 @@ from configparser import ConfigParser
 import os
 from retrying import retry
 import pandas as pd
+from pandas_gbq import to_gbq
 import pip._vendor.requests as requests
 import time
 from google.oauth2 import service_account
@@ -136,20 +137,25 @@ def executar_com_repeticao(token, url, query, endpoint_name, max_tentativas, int
 # = Função para Envio ao Bigquery, passar table, dados e cert  =#
 # ==============================================================#
 
-
 def send_to_bigquery(table, dados, cert):
     if not dados.empty:
         # Remove linhas duplicadas
         dados = dados.drop_duplicates()
+        
         key_path = cert  # Chave gerada na API bigquery
-        credentials = service_account.Credentials.from_service_account_file(key_path, scopes=[
-            "https://www.googleapis.com/auth/cloud-platform", "https://www.googleapis.com/auth/drive"])
+        credentials = service_account.Credentials.from_service_account_file(
+            key_path,
+            scopes=[
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/drive"
+            ]
+        )
+        
         # Tabela de destino
-        dados.to_gbq(credentials=credentials,
-                     destination_table=table, if_exists='replace')
-        print(f"Dataframe {table} enviados ao Bigquery")
+        to_gbq(dados, destination_table=table, credentials=credentials, if_exists='replace')
+        print(f"Dataframe {table} enviado ao BigQuery")
     else:
-        print(f"Dataframe {table} Vazio, não será enviado ao Bigquery")
+        print(f"Dataframe {table} vazio, não será enviado ao BigQuery")
 
 
 # =============================================================#
